@@ -1,10 +1,10 @@
-import React, { useState } from "react";
-import { connect } from "react-redux";
+import React, { useState, useCallback } from "react";
 import { ButtonGroup } from "react-native-elements";
 
 import { filters, setFilter } from "../../reducers/filter";
+import useAction from "../../hooks/useAction";
 
-const Filter = ({ setFilter }) => {
+const Filter = () => {
   const buttons = ["Все", "Активные", "Завершенные"];
   const filter = [
     filters.SHOW_ALL,
@@ -13,14 +13,13 @@ const Filter = ({ setFilter }) => {
   ];
   const [selectedFilter, changeFilter] = useState(0);
 
+  const handleSetFilter = useCallback((e) => {
+    changeFilter(e);
+    useAction(setFilter.type)(filter[e]);
+  }, []);
+
   return (
     <ButtonGroup
-      buttons={buttons}
-      onPress={(e) => {
-        changeFilter(e);
-        setFilter(filter[e]);
-      }}
-      selectedIndex={selectedFilter}
       containerStyle={{
         width: "100%",
         left: -11,
@@ -37,10 +36,11 @@ const Filter = ({ setFilter }) => {
       selectedTextStyle={{
         color: "#A4003B",
       }}
+      buttons={buttons}
+      selectedIndex={selectedFilter}
+      onPress={handleSetFilter}
     />
   );
 };
 
-const mapDispatchToProps = { setFilter };
-
-export default connect(null, mapDispatchToProps)(Filter);
+export default Filter;

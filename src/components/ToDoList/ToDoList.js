@@ -1,9 +1,10 @@
-import React, { useState } from "react";
-import { connect } from "react-redux";
+import React, { useState, useCallback } from "react";
+import { useSelector } from "react-redux";
 import { View } from "react-native";
 
 import { filters } from "../../reducers/filter";
 import { toggleTask, removeTask, editTask } from "../../reducers/todo";
+import useAction from "../../hooks/useAction";
 
 import Task from "./Task";
 import EditableTask from "./EditableTask";
@@ -19,20 +20,24 @@ const visibleList = (todo, filter) => {
   }
 };
 
-const ToDoList = ({ todo, toggleTask, removeTask, editTask }) => {
+const ToDoList = () => {
   const [editable, setEditable] = useState(-1);
   const [text, setText] = useState("");
   let swipeablesRef = Object.create(null);
+
+  const todo = useSelector((state) => visibleList(state.todo, state.filter));
 
   const sortedList = todo.slice(0, todo.length).sort((a, b) => {
     return a.completed - b.completed;
   });
 
-  const recenterCurrent = (newSwipable) => {
+  console.log(sortedList);
+
+  const recenterCurrent = useCallback((newSwipable) => {
     Object.values(swipeablesRef)
       .filter((s) => s.current && s !== newSwipable)
       .forEach((s) => s.current.recenter());
-  };
+  }, []);
 
   return (
     <View>
@@ -45,8 +50,8 @@ const ToDoList = ({ todo, toggleTask, removeTask, editTask }) => {
               ref={swipeablesRef[item.id]}
               recenterCurrent={recenterCurrent}
               item={item}
-              removeTask={removeTask}
-              toggleTask={toggleTask}
+              removeTask={useAction(removeTask.type)}
+              toggleTask={useAction(toggleTask.type)}
               setEditable={setEditable}
               setText={setText}
             />
@@ -54,8 +59,8 @@ const ToDoList = ({ todo, toggleTask, removeTask, editTask }) => {
         }
         return (
           <EditableTask
-            removeTask={removeTask}
-            editTask={editTask}
+            removeTask={useAction(removeTask)}
+            editTask={useAction(editTask)}
             setEditable={setEditable}
             text={text}
             setText={setText}
@@ -66,10 +71,4 @@ const ToDoList = ({ todo, toggleTask, removeTask, editTask }) => {
   );
 };
 
-const mapStateToProps = ({ todo, filter }) => ({
-  todo: visibleList(todo, filter),
-});
-
-const mapDispatchToProps = { toggleTask, removeTask, editTask };
-
-export default connect(mapStateToProps, mapDispatchToProps)(ToDoList);
+export default ToDoList;

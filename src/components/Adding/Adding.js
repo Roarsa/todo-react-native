@@ -1,12 +1,21 @@
-import React, { useState } from "react";
-import { connect } from "react-redux";
+import React, { useState, useCallback } from "react";
 import { View, TextInput } from "react-native";
 import Icon from "react-native-vector-icons/FontAwesome";
 
-import { addTask } from "../../reducers/todo";
+import { addTask as addTaskAction } from "../../reducers/todo";
+import useAction from "../../hooks/useAction";
 
-const Adding = ({ addTask }) => {
+const Adding = () => {
   const [task, setTask] = useState("");
+  const addTask = useAction(addTaskAction.type);
+
+  const handleAddTask = useCallback(() => {
+    if (task.trim() !== "") {
+      console.log("in");
+      addTask(task);
+      setTask("");
+    }
+  }, [task]);
 
   return (
     <View
@@ -18,9 +27,6 @@ const Adding = ({ addTask }) => {
       }}
     >
       <TextInput
-        placeholder="Добавить новое задание"
-        onChangeText={(text) => setTask(text)}
-        value={task}
         style={{
           width: "80%",
           height: 50,
@@ -31,28 +37,24 @@ const Adding = ({ addTask }) => {
           paddingRight: 10,
           marginLeft: "1%",
         }}
+        placeholder="Добавить новое задание"
+        value={task}
+        onChangeText={(text) => setTask(text)}
       />
       <Icon
-        name="paper-plane"
-        size={28}
-        color="#A4003B"
         style={{
           width: "10%",
           marginLeft: "3%",
           marginRight: "1%",
           transform: [{ rotate: "13deg" }],
         }}
-        onPress={() => {
-          if (task.trim() !== "") {
-            addTask(task);
-            setTask("");
-          }
-        }}
+        color="#A4003B"
+        name="paper-plane"
+        size={28}
+        onPress={handleAddTask}
       />
     </View>
   );
 };
 
-const mapDispatchToProps = { addTask };
-
-export default connect(null, mapDispatchToProps)(Adding);
+export default Adding;

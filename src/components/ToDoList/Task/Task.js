@@ -19,8 +19,8 @@ const Task = ({
     rightButtons={[
       <TouchableHighlight
         onPress={() => {
-          removeTask(item.id);
-          recenterCurrent(null);
+          //removeTask(item.id);
+          //recenterCurrent(null);
         }}
         style={{
           position: "relative",
@@ -34,8 +34,8 @@ const Task = ({
       </TouchableHighlight>,
       <TouchableHighlight
         onPress={() => {
-          setEditable(item.id);
-          setText(item.task);
+          //setEditable(item.id);
+          //setText(item.task);
         }}
         style={{
           position: "relative",
@@ -64,7 +64,7 @@ const Task = ({
         }
       }
       checkBox={{
-        onPress: () => toggleTask(item.id),
+        //onPress: () => toggleTask(item.id),
         checked: item.completed,
         checkedColor: "#A4003B",
       }}

@@ -12,6 +12,7 @@ const todo = createSlice({
         state.push({ id, task, completed: false });
       },
       prepare(task) {
+        console.log("iiin", task);
         return { payload: { id: id++, task } };
       },
     },
@@ -19,6 +20,7 @@ const todo = createSlice({
       return state.filter((todo) => todo.id !== action.payload);
     },
     toggleTask(state, action) {
+      console.log(action.payload);
       const task = state.find((task) => task.id === action.payload);
       if (task) task.completed = !task.completed;
     },
