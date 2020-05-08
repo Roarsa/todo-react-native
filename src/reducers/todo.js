@@ -6,21 +6,13 @@ const todo = createSlice({
   name: "todo",
   initialState: [],
   reducers: {
-    addTask: {
-      reducer(state, action) {
-        const { id, task } = action.payload;
-        state.push({ id, task, completed: false });
-      },
-      prepare(task) {
-        console.log("iiin", task);
-        return { payload: { id: id++, task } };
-      },
+    addTask(state, action) {
+      state.push({ id: id++, task: action.payload, completed: false });
     },
     removeTask(state, action) {
       return state.filter((todo) => todo.id !== action.payload);
     },
     toggleTask(state, action) {
-      console.log(action.payload);
       const task = state.find((task) => task.id === action.payload);
       if (task) task.completed = !task.completed;
     },

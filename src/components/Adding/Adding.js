@@ -11,8 +11,7 @@ const Adding = () => {
 
   const handleAddTask = useCallback(() => {
     if (task.trim() !== "") {
-      console.log("in");
-      addTask({ task });
+      addTask(task);
       setTask("");
     }
   }, [task]);

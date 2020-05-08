@@ -1,7 +1,7 @@
 import React, { useState, useCallback } from "react";
 import { ButtonGroup } from "react-native-elements";
 
-import { filters, setFilter } from "../../reducers/filter";
+import { filters, setFilter as setFilterAction } from "../../reducers/filter";
 import useAction from "../../hooks/useAction";
 
 const Filter = () => {
@@ -12,10 +12,11 @@ const Filter = () => {
     filters.SHOW_COMPLETED,
   ];
   const [selectedFilter, changeFilter] = useState(0);
+  const setFilter = useAction(setFilterAction.type);
 
   const handleSetFilter = useCallback((e) => {
     changeFilter(e);
-    useAction(setFilter.type)(filter[e]);
+    setFilter(filter[e]);
   }, []);
 
   return (

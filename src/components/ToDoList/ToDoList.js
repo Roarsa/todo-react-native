@@ -1,9 +1,13 @@
 import React, { useState, useCallback } from "react";
 import { useSelector } from "react-redux";
-import { View } from "react-native";
+import { ScrollView } from "react-native";
 
 import { filters } from "../../reducers/filter";
-import { toggleTask, removeTask, editTask } from "../../reducers/todo";
+import {
+  toggleTask as toggleTaskAction,
+  removeTask as removeTaskAction,
+  editTask as editTaskAction,
+} from "../../reducers/todo";
 import useAction from "../../hooks/useAction";
 
 import Task from "./Task";
@@ -25,33 +29,39 @@ const ToDoList = () => {
   const [text, setText] = useState("");
   let swipeablesRef = Object.create(null);
 
+  const toggleTask = useAction(toggleTaskAction.type);
+  const removeTask = useAction(removeTaskAction.type);
+  const editTask = useAction(editTaskAction.type);
+
   const todo = useSelector((state) => visibleList(state.todo, state.filter));
 
   const sortedList = todo.slice(0, todo.length).sort((a, b) => {
     return a.completed - b.completed;
   });
 
-  console.log(sortedList);
-
-  const recenterCurrent = useCallback((newSwipable) => {
-    Object.values(swipeablesRef)
-      .filter((s) => s.current && s !== newSwipable)
-      .forEach((s) => s.current.recenter());
-  }, []);
+  const recenterCurrent = useCallback(
+    (newSwipable) => {
+      Object.values(swipeablesRef)
+        .filter((s) => s.current && s !== newSwipable)
+        .forEach((s) => s.current.recenter());
+    },
+    [swipeablesRef]
+  );
 
   return (
-    <View>
+    <ScrollView>
       {sortedList.map((item) => {
         if (item.id !== editable) {
           if (!swipeablesRef[item.id])
             swipeablesRef[item.id] = React.createRef();
           return (
             <Task
-              ref={swipeablesRef[item.id]}
+              key={item.id}
+              refId={swipeablesRef[item.id]}
               recenterCurrent={recenterCurrent}
               item={item}
-              removeTask={useAction(removeTask.type)}
-              toggleTask={useAction(toggleTask.type)}
+              removeTask={removeTask}
+              toggleTask={toggleTask}
               setEditable={setEditable}
               setText={setText}
             />
@@ -59,15 +69,17 @@ const ToDoList = () => {
         }
         return (
           <EditableTask
-            removeTask={useAction(removeTask)}
-            editTask={useAction(editTask)}
+            key={item.id}
+            item={item}
+            removeTask={removeTask}
+            editTask={editTask}
             setEditable={setEditable}
             text={text}
             setText={setText}
           />
         );
       })}
-    </View>
+    </ScrollView>
   );
 };
 
